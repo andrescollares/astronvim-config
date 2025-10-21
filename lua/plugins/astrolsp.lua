@@ -9,11 +9,12 @@ return {
   ---@type AstroLSPOpts
   opts = {
     -- -- Configuration table of features provided by AstroLSP
-    -- features = {
-    --   codelens = true, -- enable/disable codelens refresh on start
-    --   inlay_hints = false, -- enable/disable inlay hints on start
-    --   semantic_tokens = true, -- enable/disable semantic token highlighting
-    -- },
+    features = {
+      signature_help = true,
+      --   codelens = true, -- enable/disable codelens refresh on start
+      -- inlay_hints = true, -- enable/disable inlay hints on start
+      --   semantic_tokens = true, -- enable/disable semantic token highlighting
+    },
     -- -- customize lsp formatting options
     -- formatting = {
     --   -- control auto formatting on save
