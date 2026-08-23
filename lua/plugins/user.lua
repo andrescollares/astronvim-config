@@ -7,7 +7,7 @@
 -- option for terminal buffers (default 0 = discard); see neovim PR #6142.
 vim.api.nvim_create_autocmd("TermOpen", {
   callback = function(a)
-    vim.api.nvim_buf_set_option(a.buf, "scrollback", 10000)
+    vim.api.nvim_set_option_value("scrollback", 10000, { buf = a.buf })
   end,
 })
 
