@@ -1,0 +1,6 @@
+{
+  "format.enable": false,
+    "diagnostics.globals": [
+        "require"
+    ]
+}

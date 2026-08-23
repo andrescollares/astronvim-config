@@ -2,41 +2,98 @@
 -- PLEASE REMOVE THE EXAMPLES YOU HAVE NO INTEREST IN BEFORE ENABLING THIS FILE
 -- Here are some examples:
 
+-- Keep terminal output history in the buffer so it can be scrolled/searched
+-- after the command finishes. 'scrollback' is an undocumented buffer-local
+-- option for terminal buffers (default 0 = discard); see neovim PR #6142.
+vim.api.nvim_create_autocmd("TermOpen", {
+  callback = function(a)
+    vim.api.nvim_buf_set_option(a.buf, "scrollback", 10000)
+  end,
+})
+
 ---@type LazySpec
 return {
+  -- {
+  --   "zbirenbaum/copilot.lua",
+  --   cmd = "Copilot",
+  --   build = ":Copilot auth",
+  --   event = "BufReadPost",
+  --   opts = {
+  --     suggestion = {
+  --       keymap = {
+  --         accept = false, -- handled by completion engine
+  --       },
+  --     },
+  --     filetypes = {
+  --       yaml = true,
+  --       markdown = true,
+  --     },
+  --   },
+  --   specs = {
+  --     {
+  --       "AstroNvim/astrocore",
+  --       opts = {
+  --         options = {
+  --           g = {
+  --             -- set the ai_accept function
+  --             ai_accept = function()
+  --               if require("copilot.suggestion").is_visible() then
+  --                 require("copilot.suggestion").accept()
+  --                 return true
+  --               end
+  --             end,
+  --           },
+  --         },
+  --       },
+  --     },
+  --   },
+  -- },
+  -- {
+  --   "olimorris/codecompanion.nvim",
+  --   config = function()
+  --     require("codecompanion").setup {
+  --       -- Lazy.nvim will merge this with any existing defaults (from AstroNvim/Community)
+  --       adapters = {
+  --         http = {
+  --           ["qwen_local"] = function()
+  --             return require("codecompanion.adapters").extend("openai_compatible", {
+  --               env = {
+  --                 url = "http://localhost:8020",
+  --                 chat_url = "/v1/chat/completions",
+  --                 api_key = "TERM", -- Leave empty for local
+  --               },
+  --               schema = {
+  --                 model = {
+  --                   default = "qwen3.6-27b-autoround",
+  --                 },
+  --               },
+  --             })
+  --           end,
+  --         },
+  --       },
+  --       interactions = {
+  --         -- Apply the local adapter to all agent types
+  --         chat = { adapter = "qwen_local" },
+  --         review = { adapter = "qwen_local" },
+  --         quick_fix = { adapter = "qwen_local" },
+  --         inline = { adapter = "qwen_local" },
+  --       },
+  --       -- -- Optional: Adjust timeouts for slower local models
+  --       -- display = {
+  --       --   preview = {
+  --       --     timeout = 10000, -- 10 seconds
+  --       --   },
+  --       -- },
+  --     }
+  --   end,
+  -- },
   {
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    build = ":Copilot auth",
-    event = "BufReadPost",
+    -- Override AstroNvim's bundled toggleterm: auto_scroll (default true) runs
+    -- `normal! G` on every terminal output event while in normal mode, which
+    -- yanks the cursor to the bottom and prevents scrolling live output.
+    "akinsho/toggleterm.nvim",
     opts = {
-      suggestion = {
-        keymap = {
-          accept = false, -- handled by completion engine
-        },
-      },
-      filetypes = {
-        yaml = true,
-        markdown = true,
-      },
-    },
-    specs = {
-      {
-        "AstroNvim/astrocore",
-        opts = {
-          options = {
-            g = {
-              -- set the ai_accept function
-              ai_accept = function()
-                if require("copilot.suggestion").is_visible() then
-                  require("copilot.suggestion").accept()
-                  return true
-                end
-              end,
-            },
-          },
-        },
-      },
+      auto_scroll = false,
     },
   },
   {
@@ -62,83 +119,4 @@ return {
       },
     },
   },
-
-  -- == Examples of Adding Plugins ==
-
-  -- "andweeb/presence.nvim",
-  -- {
-  --   "ray-x/lsp_signature.nvim",
-  --   event = "BufRead",
-  --   config = function() require("lsp_signature").setup() end,
-  -- },
-  --
-  -- -- == Examples of Overriding Plugins ==
-  --
-  -- -- customize dashboard options
-  -- -- {
-  -- --   "folke/snacks.nvim",
-  -- --   opts = {
-  -- --     dashboard = {
-  -- --       preset = {
-  -- --         header = table.concat({
-  -- --           " █████  ███████ ████████ ██████   ██████ ",
-  -- --           "██   ██ ██         ██    ██   ██ ██    ██",
-  -- --           "███████ ███████    ██    ██████  ██    ██",
-  -- --           "██   ██      ██    ██    ██   ██ ██    ██",
-  -- --           "██   ██ ███████    ██    ██   ██  ██████ ",
-  -- --           "",
-  -- --           "███    ██ ██    ██ ██ ███    ███",
-  -- --           "████   ██ ██    ██ ██ ████  ████",
-  -- --           "██ ██  ██ ██    ██ ██ ██ ████ ██",
-  -- --           "██  ██ ██  ██  ██  ██ ██  ██  ██",
-  -- --           "██   ████   ████   ██ ██      ██",
-  -- --         }, "\n"),
-  -- --       },
-  -- --     },
-  -- --   },
-  -- -- },
-  --
-  -- -- You can disable default plugins as follows:
-  -- -- { "max397574/better-escape.nvim", enabled = false },
-  --
-  -- -- You can also easily customize additional setup of plugins that is outside of the plugin's setup call
-  -- {
-  --   "L3MON4D3/LuaSnip",
-  --   config = function(plugin, opts)
-  --     require "astronvim.plugins.configs.luasnip"(plugin, opts) -- include the default astronvim config that calls the setup call
-  --     -- add more custom luasnip configuration such as filetype extend or custom snippets
-  --     local luasnip = require "luasnip"
-  --     luasnip.filetype_extend("javascript", { "javascriptreact" })
-  --   end,
-  -- },
-  --
-  -- {
-  --   "windwp/nvim-autopairs",
-  --   config = function(plugin, opts)
-  --     require "astronvim.plugins.configs.nvim-autopairs"(plugin, opts) -- include the default astronvim config that calls the setup call
-  --     -- add more custom autopairs configuration such as custom rules
-  --     local npairs = require "nvim-autopairs"
-  --     local Rule = require "nvim-autopairs.rule"
-  --     local cond = require "nvim-autopairs.conds"
-  --     npairs.add_rules(
-  --       {
-  --         Rule("$", "$", { "tex", "latex" })
-  --           -- don't add a pair if the next character is %
-  --           :with_pair(cond.not_after_regex "%%")
-  --           -- don't add a pair if  the previous character is xxx
-  --           :with_pair(
-  --             cond.not_before_regex("xxx", 3)
-  --           )
-  --           -- don't move right when repeat character
-  --           :with_move(cond.none())
-  --           -- don't delete if the next character is xx
-  --           :with_del(cond.not_after_regex "xx")
-  --           -- disable adding a newline when you press <cr>
-  --           :with_cr(cond.none()),
-  --       },
-  --       -- disable for .vim files, but it work for another filetypes
-  --       Rule("a", "a", "-vim")
-  --     )
-  --   end,
-  -- },
 }
